@@ -6,6 +6,7 @@
   <title>Bijan Driver</title>
   <style>
     * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
     body {
       margin: 0;
       font-family: Arial, sans-serif;
@@ -161,7 +162,6 @@
       text-align: center;
     }
 
-    /* DASHBOARD */
     .topbar {
       position: sticky;
       top: 0;
@@ -283,7 +283,7 @@
       margin-bottom: 20px;
     }
 
-    .stat-box, .menu-box, .orders-panel, .activity-panel {
+    .stat-box, .menu-box, .panel-box {
       background: #0f172a;
       border: 1px solid rgba(255,255,255,.05);
       border-radius: 28px;
@@ -300,6 +300,16 @@
     .stat-label, .menu-desc {
       color: #9ca3af;
       font-size: 12px;
+    }
+
+    .menu-box {
+      cursor: pointer;
+      transition: .2s ease;
+    }
+
+    .menu-box:hover {
+      transform: translateY(-3px);
+      border-color: rgba(234,179,8,.25);
     }
 
     .menu-title {
@@ -324,6 +334,11 @@
     .purple { background: rgba(168,85,247,.1); color: #c084fc; }
     .yellow { background: rgba(234,179,8,.1); color: #facc15; }
 
+    .panel-box {
+      padding-bottom: 16px;
+      margin-bottom: 20px;
+    }
+
     .panel-head {
       display: flex;
       justify-content: space-between;
@@ -336,11 +351,6 @@
       font-size: 20px;
     }
 
-    .orders-panel, .activity-panel {
-      padding-bottom: 16px;
-      margin-bottom: 20px;
-    }
-
     .filters {
       display: grid;
       grid-template-columns: 1fr 220px;
@@ -348,7 +358,7 @@
       padding: 16px 20px;
     }
 
-    .orders-list, .activity-list {
+    .panel-content {
       padding: 0 20px;
     }
 
@@ -514,7 +524,6 @@
 </head>
 <body>
 
-  <!-- REGISTRATION -->
   <section id="registrationPage" class="page-center">
     <div class="card">
       <div class="hero">
@@ -530,7 +539,6 @@
         </div>
 
         <form id="registerForm">
-          <!-- STEP 1 -->
           <div id="step1">
             <h3 class="section-title">Thông tin cá nhân</h3>
             <div class="form-group">
@@ -542,7 +550,6 @@
             <button type="button" id="toStep2" class="btn btn-yellow">TIẾP TỤC</button>
           </div>
 
-          <!-- STEP 2 -->
           <div id="step2" class="hidden">
             <h3 class="section-title">Giấy tờ pháp lý</h3>
             <div class="form-group">
@@ -557,7 +564,6 @@
             </div>
           </div>
 
-          <!-- STEP 3 -->
           <div id="step3" class="hidden">
             <h3 class="section-title">Thông tin phương tiện</h3>
             <div class="form-group">
@@ -582,7 +588,6 @@
     </div>
   </section>
 
-  <!-- DASHBOARD -->
   <section id="dashboardPage" class="hidden">
     <div class="topbar">
       <div class="top-left">
@@ -631,29 +636,29 @@
       </div>
 
       <div class="menu-grid">
-        <div class="menu-box">
+        <div class="menu-box" id="menuTrips">
           <div class="menu-icon blue">🚘</div>
           <div class="menu-title">Chuyến xe</div>
           <div class="menu-desc">Quản lý các yêu cầu</div>
         </div>
-        <div class="menu-box">
+        <div class="menu-box" id="menuStats">
           <div class="menu-icon green">📈</div>
           <div class="menu-title">Hiệu suất</div>
           <div class="menu-desc">Báo cáo doanh thu</div>
         </div>
-        <div class="menu-box">
+        <div class="menu-box" id="menuWallet">
           <div class="menu-icon purple">💼</div>
           <div class="menu-title">Ví tiền</div>
-          <div class="menu-desc">Rút tiền &amp; Nạp tiền</div>
+          <div class="menu-desc">Rút tiền & Nạp tiền</div>
         </div>
-        <div class="menu-box">
+        <div class="menu-box" id="menuProfile">
           <div class="menu-icon yellow">👤</div>
           <div class="menu-title">Cá nhân</div>
           <div class="menu-desc">Hồ sơ tài xế</div>
         </div>
       </div>
 
-      <div class="orders-panel">
+      <div id="sectionTrips" class="panel-box">
         <div class="panel-head">
           <h3>Danh sách đơn realtime</h3>
           <div style="color:#6b7280;">›</div>
@@ -671,25 +676,88 @@
           </select>
         </div>
 
-        <div id="ordersList" class="orders-list">
+        <div id="ordersList" class="panel-content">
           <div class="empty">Chưa có đơn nào</div>
         </div>
       </div>
 
-      <div class="activity-panel">
+      <div id="sectionStats" class="panel-box">
+        <div class="panel-head">
+          <h3>Hiệu suất</h3>
+          <div style="color:#6b7280;">›</div>
+        </div>
+        <div class="panel-content" style="padding-top:16px;">
+          <div class="stats-grid" style="margin-bottom:0;">
+            <div class="stat-box">
+              <div class="stat-label">Đơn hoàn thành</div>
+              <div class="stat-num" id="perfCompleted">0</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-label">Đơn đã nhận</div>
+              <div class="stat-num" id="perfAccepted">0</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-label">Đơn chờ nhận</div>
+              <div class="stat-num" id="perfPending">0</div>
+            </div>
+            <div class="stat-box">
+              <div class="stat-label">Doanh thu</div>
+              <div class="stat-num" id="perfRevenue">0đ</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="sectionWallet" class="panel-box">
+        <div class="panel-head">
+          <h3>Ví tiền</h3>
+          <div style="color:#6b7280;">›</div>
+        </div>
+        <div class="panel-content" style="padding-top:16px;">
+          <div class="order-item">
+            <div class="order-name">Số dư hiện tại</div>
+            <div class="price" id="walletBalance">0đ</div>
+            <div class="order-actions">
+              <button class="small-btn btn-complete" onclick="alert('Chức năng rút tiền sẽ làm sau')">Rút tiền</button>
+              <button class="small-btn btn-accept" onclick="alert('Chức năng nạp tiền sẽ làm sau')">Nạp tiền</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="sectionProfile" class="panel-box">
+        <div class="panel-head">
+          <h3>Cá nhân</h3>
+          <div style="color:#6b7280;">›</div>
+        </div>
+        <div class="panel-content" style="padding-top:16px;">
+          <div class="order-item">
+            <div class="order-grid">
+              <div><span class="muted">Họ tên:</span> <span id="profileName">---</span></div>
+              <div><span class="muted">Mã tài xế:</span> <span id="profileDriverId">---</span></div>
+              <div><span class="muted">Số điện thoại:</span> <span id="profilePhone">---</span></div>
+              <div><span class="muted">CCCD:</span> <span id="profileIdNumber">---</span></div>
+              <div><span class="muted">Bằng lái:</span> <span id="profileLicense">---</span></div>
+              <div><span class="muted">Dòng xe:</span> <span id="profileCarType">---</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="sectionActivity" class="panel-box">
         <div class="panel-head">
           <h3>Hoạt động mới nhất</h3>
           <div style="color:#6b7280;">›</div>
         </div>
-        <div id="activityList" class="activity-list"></div>
+        <div id="activityList" class="panel-content"></div>
       </div>
     </div>
 
     <div class="bottom-nav">
-      <button class="nav-btn active">🧭</button>
-      <button class="nav-btn">📅</button>
-      <button class="nav-btn">💰</button>
-      <button class="nav-btn">👤</button>
+      <button class="nav-btn active" onclick="goToSection('sectionTrips')">🧭</button>
+      <button class="nav-btn" onclick="goToSection('sectionStats')">📅</button>
+      <button class="nav-btn" onclick="goToSection('sectionWallet')">💰</button>
+      <button class="nav-btn" onclick="goToSection('sectionProfile')">👤</button>
     </div>
   </section>
 
@@ -716,10 +784,10 @@
     let driver = {
       driverId: localStorage.getItem("driverId") || "",
       fullName: localStorage.getItem("driverName") || "",
-      phone: "",
-      idNumber: "",
-      licenseNumber: "",
-      carType: "Tất cả các dòng xe"
+      phone: localStorage.getItem("driverPhone") || "",
+      idNumber: localStorage.getItem("driverIdNumber") || "",
+      licenseNumber: localStorage.getItem("driverLicenseNumber") || "",
+      carType: localStorage.getItem("driverCarType") || "Tất cả các dòng xe"
     };
 
     const registrationPage = document.getElementById("registrationPage");
@@ -764,6 +832,7 @@
       fillDriverInfo();
       renderOrders();
       renderActivity();
+      updateStats();
     }
 
     function showRegistration() {
@@ -777,6 +846,13 @@
       document.getElementById("driverNameText").textContent = driver.fullName || "Tài xế Bijan";
       document.getElementById("driverIdText").textContent = driver.driverId || "---";
       document.getElementById("driverShortName").textContent = driver.fullName || "---";
+
+      document.getElementById("profileName").textContent = driver.fullName || "---";
+      document.getElementById("profileDriverId").textContent = driver.driverId || "---";
+      document.getElementById("profilePhone").textContent = driver.phone || "---";
+      document.getElementById("profileIdNumber").textContent = driver.idNumber || "---";
+      document.getElementById("profileLicense").textContent = driver.licenseNumber || "---";
+      document.getElementById("profileCarType").textContent = driver.carType || "---";
     }
 
     function formatMoney(value) {
@@ -805,6 +881,13 @@
       document.getElementById("revenueText").textContent = formatMoney(revenue);
       document.getElementById("runningTrips").textContent = myAcceptedOrders.length;
       document.getElementById("doneTrips").textContent = myCompletedOrders.length;
+
+      document.getElementById("perfCompleted").textContent = myCompletedOrders.length;
+      document.getElementById("perfAccepted").textContent = myAcceptedOrders.length;
+      document.getElementById("perfPending").textContent = pendingOrders.length;
+      document.getElementById("perfRevenue").textContent = formatMoney(revenue);
+
+      document.getElementById("walletBalance").textContent = formatMoney(revenue);
     }
 
     function renderOrders() {
@@ -966,9 +1049,22 @@
         .replaceAll("'", "&#039;");
     }
 
+    function goToSection(sectionId) {
+      const el = document.getElementById(sectionId);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+    }
+
     window.acceptOrder = acceptOrder;
     window.completeOrder = completeOrder;
     window.cancelOrder = cancelOrder;
+    window.goToSection = goToSection;
+
+    document.getElementById("menuTrips").addEventListener("click", () => goToSection("sectionTrips"));
+    document.getElementById("menuStats").addEventListener("click", () => goToSection("sectionStats"));
+    document.getElementById("menuWallet").addEventListener("click", () => goToSection("sectionWallet"));
+    document.getElementById("menuProfile").addEventListener("click", () => goToSection("sectionProfile"));
 
     document.getElementById("toStep2").addEventListener("click", () => {
       const fullName = document.getElementById("fullName").value.trim();
@@ -1008,6 +1104,11 @@
       setTimeout(() => {
         localStorage.setItem("driverId", driver.driverId);
         localStorage.setItem("driverName", driver.fullName);
+        localStorage.setItem("driverPhone", driver.phone);
+        localStorage.setItem("driverIdNumber", driver.idNumber);
+        localStorage.setItem("driverLicenseNumber", driver.licenseNumber);
+        localStorage.setItem("driverCarType", driver.carType);
+
         submitBtn.disabled = false;
         submitBtn.textContent = "ĐĂNG KÝ NGAY";
         showDashboard();
@@ -1017,6 +1118,11 @@
     document.getElementById("logoutBtn").addEventListener("click", () => {
       localStorage.removeItem("driverId");
       localStorage.removeItem("driverName");
+      localStorage.removeItem("driverPhone");
+      localStorage.removeItem("driverIdNumber");
+      localStorage.removeItem("driverLicenseNumber");
+      localStorage.removeItem("driverCarType");
+
       driver = {
         driverId: "",
         fullName: "",
@@ -1040,6 +1146,7 @@
       orders.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
       renderOrders();
       renderActivity();
+      updateStats();
     }, (error) => {
       ordersList.innerHTML = `<div class="empty">Lỗi kết nối Firebase: ${escapeHtml(error.message)}</div>`;
     });
