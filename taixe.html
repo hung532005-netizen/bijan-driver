@@ -1,0 +1,318 @@
+import React, { useState, useEffect } from 'react';
+import { 
+  User, 
+  Car, 
+  FileText, 
+  CheckCircle, 
+  MapPin, 
+  Navigation, 
+  DollarSign, 
+  Clock, 
+  LogOut,
+  ChevronRight,
+  ShieldCheck,
+  Star,
+  Wallet,
+  Calendar,
+  Bell,
+  TrendingUp,
+  Award
+} from 'lucide-react';
+
+const App = () => {
+  const [isRegistered, setIsRegistered] = useState(false);
+  const [step, setStep] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [driverId, setDriverId] = useState('');
+  const [formData, setFormData] = useState({
+    fullName: '',
+    phone: '',
+    idNumber: '',
+    licenseNumber: '',
+    carType: 'Tất cả các dòng xe',
+  });
+
+  // Tạo mã tài xế ngẫu nhiên không trùng lặp
+  const generateDriverId = () => {
+    const randomStr = Math.random().toString(36).substring(2, 6).toUpperCase();
+    const randomNum = Math.floor(1000 + Math.random() * 9000);
+    return `BJN-${randomStr}${randomNum}`;
+  };
+
+  const handleRegister = (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      setDriverId(generateDriverId());
+      setIsRegistered(true);
+    }, 2000);
+  };
+
+  const updateField = (field, value) => {
+    setFormData({ ...formData, [field]: value });
+  };
+
+  // Màn hình Đăng ký
+  const RegistrationForm = () => (
+    <div className="min-h-screen bg-[#020617] flex items-center justify-center p-4">
+      <div className="max-w-xl w-full bg-[#0f172a] rounded-3xl border border-white/5 overflow-hidden shadow-2xl">
+        <div className="bg-gradient-to-r from-yellow-500 to-yellow-600 p-8 text-[#020617]">
+          <h1 className="text-3xl font-black uppercase tracking-tighter">BIJAN DRIVER</h1>
+          <p className="text-sm font-bold opacity-90">Gia nhập đội ngũ tài xế chuyên nghiệp</p>
+        </div>
+
+        <div className="p-8">
+          <div className="flex justify-between mb-10 relative">
+            <div className="absolute top-1/2 left-0 w-full h-0.5 bg-white/5 -translate-y-1/2 z-0"></div>
+            {[1, 2, 3].map((num) => (
+              <div 
+                key={num}
+                className={`relative z-10 w-12 h-12 rounded-2xl flex items-center justify-center font-bold transition-all duration-500 border-2 ${
+                  step >= num ? 'bg-yellow-500 border-yellow-400 text-[#020617]' : 'bg-[#1e293b] border-white/5 text-gray-500'
+                }`}
+              >
+                {step > num ? <CheckCircle size={22} /> : num}
+              </div>
+            ))}
+          </div>
+
+          <form onSubmit={handleRegister} className="space-y-6">
+            {step === 1 && (
+              <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
+                <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                   Thông tin cá nhân
+                </h3>
+                <div className="space-y-4">
+                  <input 
+                    type="text" required
+                    className="w-full bg-[#1e293b] border border-white/5 rounded-2xl p-4 text-white focus:border-yellow-500 outline-none transition-all"
+                    placeholder="Họ và tên"
+                    value={formData.fullName}
+                    onChange={(e) => updateField('fullName', e.target.value)}
+                  />
+                  <input 
+                    type="tel" required
+                    className="w-full bg-[#1e293b] border border-white/5 rounded-2xl p-4 text-white focus:border-yellow-500 outline-none transition-all"
+                    placeholder="Số điện thoại"
+                    value={formData.phone}
+                    onChange={(e) => updateField('phone', e.target.value)}
+                  />
+                </div>
+                <button 
+                  type="button"
+                  onClick={() => setStep(2)}
+                  className="w-full bg-yellow-500 hover:bg-yellow-400 text-[#020617] font-black py-4 rounded-2xl transition-all shadow-lg shadow-yellow-500/10"
+                >
+                  TIẾP TỤC
+                </button>
+              </div>
+            )}
+
+            {step === 2 && (
+              <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
+                <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                  Giấy tờ pháp lý
+                </h3>
+                <div className="space-y-4">
+                  <input 
+                    type="text" required
+                    className="w-full bg-[#1e293b] border border-white/5 rounded-2xl p-4 text-white focus:border-yellow-500 outline-none transition-all"
+                    placeholder="Số CCCD / CMND"
+                    value={formData.idNumber}
+                    onChange={(e) => updateField('idNumber', e.target.value)}
+                  />
+                  <div className="relative">
+                    <input 
+                      type="text" required
+                      className="w-full bg-[#1e293b] border border-white/5 rounded-2xl p-4 text-white focus:border-yellow-500 outline-none transition-all"
+                      placeholder="Số bằng lái (Hạng B1 trở lên)"
+                      value={formData.licenseNumber}
+                      onChange={(e) => updateField('licenseNumber', e.target.value)}
+                    />
+                    <div className="absolute right-4 top-1/2 -translate-y-1/2 text-[10px] bg-yellow-500/20 text-yellow-500 px-2 py-1 rounded font-bold">B1+</div>
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <button type="button" onClick={() => setStep(1)} className="py-4 text-gray-400 font-bold hover:text-white transition">Quay lại</button>
+                  <button type="button" onClick={() => setStep(3)} className="bg-white/5 hover:bg-white/10 text-white font-bold py-4 rounded-2xl transition">Tiếp theo</button>
+                </div>
+              </div>
+            )}
+
+            {step === 3 && (
+              <div className="space-y-4 animate-in fade-in slide-in-from-right-4">
+                <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                  Thông tin phương tiện
+                </h3>
+                <div>
+                  <label className="block text-gray-500 text-xs mb-2 uppercase font-bold tracking-widest">Lựa chọn dòng xe</label>
+                  <select 
+                    className="w-full bg-[#1e293b] border border-white/5 rounded-2xl p-4 text-white outline-none focus:border-yellow-500"
+                    value={formData.carType}
+                    onChange={(e) => updateField('carType', e.target.value)}
+                  >
+                    <option>Tất cả các dòng xe</option>
+                    <option>Bijan Economy (4 chỗ)</option>
+                    <option>Bijan Premium (7 chỗ)</option>
+                    <option>Bijan Luxury (Xe sang)</option>
+                  </select>
+                </div>
+                <div className="p-4 bg-yellow-500/5 border border-yellow-500/10 rounded-2xl">
+                  <p className="text-xs text-yellow-500/80 text-center leading-relaxed">
+                    Bằng việc xác nhận, bạn cam kết cung cấp thông tin chính xác và tuân thủ quy tắc ứng xử của Bijan.
+                  </p>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <button type="button" onClick={() => setStep(2)} className="py-4 text-gray-400 font-bold hover:text-white transition">Quay lại</button>
+                  <button 
+                    type="submit" 
+                    disabled={loading}
+                    className="bg-yellow-500 hover:bg-yellow-400 text-[#020617] font-black py-4 rounded-2xl shadow-lg shadow-yellow-500/20 disabled:opacity-50 transition-all"
+                  >
+                    {loading ? 'ĐANG XỬ LÝ...' : 'ĐĂNG KÝ NGAY'}
+                  </button>
+                </div>
+              </div>
+            )}
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+
+  // Màn hình Dashboard (Giao diện theo ảnh mẫu)
+  const DriverDashboard = () => (
+    <div className="min-h-screen bg-[#020617] text-white pb-24">
+      {/* Top Header */}
+      <div className="p-6 flex justify-between items-center bg-[#0f172a] border-b border-white/5 sticky top-0 z-40">
+        <div className="flex items-center gap-3">
+          <div className="relative">
+            <div className="w-12 h-12 rounded-2xl bg-yellow-500 flex items-center justify-center text-[#020617] font-black text-xl shadow-lg shadow-yellow-500/20">
+              {formData.fullName.charAt(0) || 'B'}
+            </div>
+            <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-green-500 border-2 border-[#0f172a] rounded-full"></div>
+          </div>
+          <div>
+            <h2 className="font-bold text-base leading-tight">{formData.fullName || 'Tài xế Bijan'}</h2>
+            <div className="flex items-center gap-2">
+               <span className="text-[10px] text-yellow-500 font-bold tracking-widest uppercase">{driverId}</span>
+               <span className="text-[10px] text-gray-500">•</span>
+               <span className="text-[10px] text-gray-400 font-medium">B1+ Verified</span>
+            </div>
+          </div>
+        </div>
+        <div className="flex gap-2">
+          <button className="p-2 bg-white/5 rounded-xl text-gray-400"><Bell size={20} /></button>
+          <button onClick={() => { setIsRegistered(false); setStep(1); }} className="p-2 bg-white/5 rounded-xl text-red-400">
+            <LogOut size={20} />
+          </button>
+        </div>
+      </div>
+
+      <div className="p-6 space-y-6 max-w-2xl mx-auto">
+        {/* Banner Tổng kết nhanh */}
+        <div className="bg-gradient-to-br from-yellow-500 to-yellow-600 rounded-[2.5rem] p-8 text-[#020617] relative overflow-hidden">
+          <div className="relative z-10">
+            <p className="text-xs font-black uppercase tracking-widest opacity-70 mb-1">Thu nhập hôm nay</p>
+            <h1 className="text-4xl font-black mb-6">1.280.000đ</h1>
+            <div className="flex gap-3">
+              <div className="bg-black/10 backdrop-blur-md px-4 py-2 rounded-2xl flex items-center gap-2">
+                <Navigation size={14} className="fill-black" />
+                <span className="text-xs font-bold">12 Chuyến</span>
+              </div>
+              <div className="bg-black/10 backdrop-blur-md px-4 py-2 rounded-2xl flex items-center gap-2">
+                <Star size={14} className="fill-black" />
+                <span className="text-xs font-bold">4.98</span>
+              </div>
+            </div>
+          </div>
+          <Award className="absolute -right-4 -bottom-4 text-black/5 w-40 h-40 rotate-12" />
+        </div>
+
+        {/* Menu Chức năng (Grid 2x2 theo mẫu) */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="bg-[#0f172a] p-6 rounded-[2rem] border border-white/5 hover:border-yellow-500/30 transition-all group">
+            <div className="w-12 h-12 bg-blue-500/10 text-blue-500 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <Car size={24} />
+            </div>
+            <h4 className="font-bold text-sm mb-1">Chuyến xe</h4>
+            <p className="text-[10px] text-gray-500">Quản lý các yêu cầu</p>
+          </div>
+
+          <div className="bg-[#0f172a] p-6 rounded-[2rem] border border-white/5 hover:border-yellow-500/30 transition-all group">
+            <div className="w-12 h-12 bg-green-500/10 text-green-500 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <TrendingUp size={24} />
+            </div>
+            <h4 className="font-bold text-sm mb-1">Hiệu suất</h4>
+            <p className="text-[10px] text-gray-500">Báo cáo doanh thu</p>
+          </div>
+
+          <div className="bg-[#0f172a] p-6 rounded-[2rem] border border-white/5 hover:border-yellow-500/30 transition-all group">
+            <div className="w-12 h-12 bg-purple-500/10 text-purple-500 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <Wallet size={24} />
+            </div>
+            <h4 className="font-bold text-sm mb-1">Ví tiền</h4>
+            <p className="text-[10px] text-gray-500">Rút tiền & Nạp tiền</p>
+          </div>
+
+          <div className="bg-[#0f172a] p-6 rounded-[2rem] border border-white/5 hover:border-yellow-500/30 transition-all group">
+            <div className="w-12 h-12 bg-yellow-500/10 text-yellow-500 rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+              <User size={24} />
+            </div>
+            <h4 className="font-bold text-sm mb-1">Cá nhân</h4>
+            <p className="text-[10px] text-gray-500">Hồ sơ tài xế</p>
+          </div>
+        </div>
+
+        {/* Hoạt động gần đây */}
+        <div className="space-y-4">
+          <div className="flex justify-between items-center">
+            <h3 className="text-lg font-bold">Hoạt động mới nhất</h3>
+            <ChevronRight className="text-gray-600" />
+          </div>
+          <div className="bg-[#0f172a] rounded-[2rem] border border-white/5 overflow-hidden">
+            {[1, 2, 3].map((item, idx) => (
+              <div key={item} className={`p-5 flex items-center justify-between ${idx !== 2 ? 'border-b border-white/5' : ''}`}>
+                <div className="flex items-center gap-4">
+                  <div className="w-10 h-10 bg-white/5 rounded-xl flex items-center justify-center text-yellow-500">
+                    <MapPin size={20} />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold">Hoàn tất chuyến đi #{823 + item}</p>
+                    <p className="text-[10px] text-gray-500">2 giờ trước • Thanh toán thẻ</p>
+                  </div>
+                </div>
+                <p className="text-sm font-bold text-green-500">+145.000đ</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Bottom Navigation */}
+      <div className="fixed bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-md bg-[#0f172a]/80 backdrop-blur-xl border border-white/10 p-2 rounded-[2.5rem] flex justify-between items-center shadow-2xl z-50">
+        <button className="w-14 h-14 bg-yellow-500 rounded-full flex items-center justify-center text-[#020617] shadow-lg shadow-yellow-500/20">
+          <Navigation size={24} />
+        </button>
+        <button className="w-14 h-14 text-gray-500 flex items-center justify-center">
+          <Calendar size={24} />
+        </button>
+        <button className="w-14 h-14 text-gray-500 flex items-center justify-center">
+          <DollarSign size={24} />
+        </button>
+        <button className="w-14 h-14 text-gray-500 flex items-center justify-center">
+          <User size={24} />
+        </button>
+      </div>
+    </div>
+  );
+
+  return (
+    <div className="font-sans antialiased selection:bg-yellow-500 selection:text-black">
+      {isRegistered ? <DriverDashboard /> : <RegistrationForm />}
+    </div>
+  );
+};
+
+export default App;
