@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tài xế nhận đơn | Bijan Driver</title>
+  <style>
+    :root{
+      --primary:#0d6efd;
+      --primary-dark:#0a58ca;
+      --success:#198754;
+      --danger:#dc3545;
+      --warning:#fd7e14;
+      --bg:#f4f7fb;
+      --card:#ffffff;
+      --text:#1f2937;
+      --muted:#6b7280;
+      --line:#e5e7eb;
+      --shadow:0 10px 30px rgba(0,0,0,.08);
+      --radius:18px;
+    }
+
+    *{
+      box-sizing:border-box;
+      margin:0;
+      padding:0;
+    }
+
+    body{
+      font-family:Arial, Helvetica, sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      line-height:1.5;
+    }
+
+    .container{
+      width:min(1100px, 92%);
+      margin:24px auto 40px;
+    }
+
+    .topbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
+      flex-wrap:wrap;
+      margin-bottom:20px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:14px;
+    }
+
+    .logo{
+      width:54px;
+      height:54px;
+      border-radius:16px;
+      background:linear-gradient(135deg, var(--primary), #4ea1ff);
+      color:#fff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:24px;
+      font-weight:700;
+      box-shadow:var(--shadow);
+    }
+
+    .brand h1{
+      font-size:28px;
+      margin-bottom:2px;
+    }
+
+    .brand p{
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    .driver-box{
+      background:var(--card);
+      border-radius:var(--radius);
+      padding:16px;
+      box-shadow:var(--shadow);
+      display:flex;
+      align-items:center;
+      gap:12px;
+      flex-wrap:wrap;
+    }
+
+    .driver-box input{
+      padding:12px 14px;
+      border:1px solid var(--line);
+      border-radius:12px;
+      min-width:220px;
+      outline:none;
+      font-size:15px;
+    }
+
+    .driver-box button{
+      padding:12px 16px;
+      border:none;
+      border-radius:12px;
+      background:var(--primary);
+      color:#fff;
+      cursor:pointer;
+      font-weight:700;
+    }
+
+    .driver-box button:hover{
+      background:var(--primary-dark);
+    }
+
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(4, 1fr);
+      gap:16px;
+      margin:18px 0 24px;
+    }
+
+    .stat{
+      background:var(--card);
+      border-radius:var(--radius);
+      padding:18px;
+      box-shadow:var(--shadow);
+    }
+
+    .stat .label{
+      color:var(--muted);
+      font-size:14px;
+      margin-bottom:8px;
+    }
+
+    .stat .value{
+      font-size:28px;
+      font-weight:800;
+    }
+
+    .filters{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-bottom:18px;
+    }
+
+    .filters input,
+    .filters select{
+      padding:12px 14px;
+      border:1px solid var(--line);
+      border-radius:12px;
+      background:#fff;
+      outline:none;
+      font-size:15px;
+    }
+
+    .filters input{
+      flex:1;
+      min-width:250px;
+    }
+
+    .section-title{
+      font-size:22px;
+      margin-bottom:14px;
+    }
+
+    .orders-grid{
+      display:grid;
+      grid-template-columns:repeat(2, 1fr);
+      gap:18px;
+    }
+
+    .card{
+      background:var(--card);
+      border-radius:20px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      border:1px solid #eef2f7;
+    }
+
+    .card-header{
+      padding:16px 18px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:12px;
+      border-bottom:1px solid var(--line);
+      background:#fbfdff;
+    }
+
+    .card-title{
+      font-size:19px;
+      font-weight:800;
+    }
+
+    .badge{
+      padding:7px 12px;
+      border-radius:999px;
+      font-size:12px;
+      font-weight:700;
+      white-space:nowrap;
+    }
+
+    .badge.pending{
+      background:#fff3cd;
+      color:#9a6700;
+    }
+
+    .badge.accepted{
+      background:#d1e7dd;
+      color:#0f5132;
+    }
+
+    .badge.completed{
+      background:#dbeafe;
+      color:#1d4ed8;
+    }
+
+    .badge.cancelled{
+      background:#f8d7da;
+      color:#842029;
+    }
+
+    .card-body{
+      padding:18px;
+    }
+
+    .info-row{
+      display:grid;
+      grid-template-columns:120px 1fr;
+      gap:10px;
+      margin-bottom:12px;
+      align-items:start;
+    }
+
+    .info-row .label{
+      color:var(--muted);
+      font-weight:700;
+    }
+
+    .info-row .value{
+      word-break:break-word;
+    }
+
+    .price{
+      font-size:26px;
+      font-weight:800;
+      color:var(--success);
+      margin:8px 0 14px;
+    }
+
+    .actions{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:8px;
+    }
+
+    .btn{
+      border:none;
+      border-radius:12px;
+      padding:12px 15px;
+      font-weight:700;
+      cursor:pointer;
+      font-size:14px;
+    }
+
+    .btn-accept{
+      background:var(--success);
+      color:#fff;
+    }
+
+    .btn-complete{
+      background:var(--primary);
+      color:#fff;
+    }
+
+    .btn-cancel{
+      background:var(--danger);
+      color:#fff;
+    }
+
+    .btn:disabled{
+      opacity:.6;
+      cursor:not-allowed;
+    }
+
+    .empty{
+      background:#fff;
+      border:1px dashed #cbd5e1;
+      border-radius:18px;
+      padding:40px 20px;
+      text-align:center;
+      color:var(--muted);
+      box-shadow:var(--shadow);
+    }
+
+    .footer-note{
+      margin-top:28px;
+      color:var(--muted);
+      text-align:center;
+      font-size:14px;
+    }
+
+    @media (max-width: 900px){
+      .stats{
+        grid-template-columns:repeat(2, 1fr);
+      }
+      .orders-grid{
+        grid-template-columns:1fr;
+      }
+    }
+
+    @media (max-width: 560px){
+      .stats{
+        grid-template-columns:1fr;
+      }
+      .info-row{
+        grid-template-columns:1fr;
+      }
+      .brand h1{
+        font-size:24px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="topbar">
+      <div class="brand">
+        <div class="logo">🚗</div>
+        <div>
+          <h1>Web tài xế Bijan Driver</h1>
+          <p>Nhận đơn realtime từ khách hàng</p>
+        </div>
+      </div>
+
+      <div class="driver-box">
+        <input id="driverId" placeholder="Mã tài xế, ví dụ: TX001" />
+        <input id="driverName" placeholder="Tên tài xế, ví dụ: Nguyễn Văn B" />
+        <button id="saveDriverBtn">Lưu thông tin tài xế</button>
+      </div>
+    </div>
+
+    <div class="stats">
+      <div class="stat">
+        <div class="label">Đơn chờ nhận</div>
+        <div class="value" id="pendingCount">0</div>
+      </div>
+      <div class="stat">
+        <div class="label">Đơn tôi đã nhận</div>
+        <div class="value" id="acceptedCount">0</div>
+      </div>
+      <div class="stat">
+        <div class="label">Đơn hoàn thành</div>
+        <div class="value" id="completedCount">0</div>
+      </div>
+      <div class="stat">
+        <div class="label">Tổng doanh thu tạm tính</div>
+        <div class="value" id="totalRevenue">0đ</div>
+      </div>
+    </div>
+
+    <div class="filters">
+      <input id="searchInput" placeholder="Tìm theo tên khách, số điện thoại, điểm đón, điểm đến..." />
+      <select id="statusFilter">
+        <option value="all">Tất cả trạng thái</option>
+        <option value="pending">Đơn chờ nhận</option>
+        <option value="accepted">Đơn đã nhận</option>
+        <option value="completed">Đơn hoàn thành</option>
+        <option value="cancelled">Đơn đã hủy</option>
+        <option value="mine">Chỉ đơn của tôi</option>
+      </select>
+    </div>
+
+    <h2 class="section-title">Danh sách đơn</h2>
+    <div id="ordersList" class="orders-grid"></div>
+
+    <div class="footer-note">
+      Trang tài xế đang kết nối Firebase Realtime Database.
+    </div>
+  </div>
+
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import {
+      getDatabase,
+      ref,
+      onValue,
+      runTransaction,
+      update
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+
+    // =========================
+    // 1. DÁN FIREBASE CONFIG Ở ĐÂY
+    // =========================
+    const firebaseConfig = {
+      apiKey: "DAN_API_KEY_VAO_DAY",
+      authDomain: "TEN-DU-AN.firebaseapp.com",
+      databaseURL: "https://TEN-DU-AN-default-rtdb.asia-southeast1.firebasedatabase.app",
+      projectId: "TEN-DU-AN",
+      storageBucket: "TEN-DU-AN.appspot.com",
+      messagingSenderId: "XXXX",
+      appId: "XXXX"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    const driverIdInput = document.getElementById("driverId");
+    const driverNameInput = document.getElementById("driverName");
+    const saveDriverBtn = document.getElementById("saveDriverBtn");
+
+    const searchInput = document.getElementById("searchInput");
+    const statusFilter = document.getElementById("statusFilter");
+    const ordersList = document.getElementById("ordersList");
+
+    const pendingCount = document.getElementById("pendingCount");
+    const acceptedCount = document.getElementById("acceptedCount");
+    const completedCount = document.getElementById("completedCount");
+    const totalRevenue = document.getElementById("totalRevenue");
+
+    let allOrders = [];
+
+    driverIdInput.value = localStorage.getItem("driverId") || "";
+    driverNameInput.value = localStorage.getItem("driverName") || "";
+
+    saveDriverBtn.addEventListener("click", () => {
+      const driverId = driverIdInput.value.trim();
+      const driverName = driverNameInput.value.trim();
+
+      if (!driverId || !driverName) {
+        alert("Vui lòng nhập đủ mã tài xế và tên tài xế");
+        return;
+      }
+
+      localStorage.setItem("driverId", driverId);
+      localStorage.setItem("driverName", driverName);
+      alert("Đã lưu thông tin tài xế");
+      renderOrders();
+    });
+
+    searchInput.addEventListener("input", renderOrders);
+    statusFilter.addEventListener("change", renderOrders);
+
+    const ordersRef = ref(db, "orders");
+
+    onValue(ordersRef, (snapshot) => {
+      const data = snapshot.val() || {};
+      allOrders = Object.entries(data).map(([id, order]) => ({
+        id,
+        ...order
+      }));
+
+      allOrders.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+
+      updateStats();
+      renderOrders();
+    });
+
+    function getDriverInfo() {
+      return {
+        driverId: (driverIdInput.value || "").trim(),
+        driverName: (driverNameInput.value || "").trim()
+      };
+    }
+
+    function updateStats() {
+      const { driverId } = getDriverInfo();
+
+      const pending = allOrders.filter(order => order.status === "pending").length;
+      const accepted = allOrders.filter(order => order.status === "accepted" && order.driverId === driverId).length;
+      const completed = allOrders.filter(order => order.status === "completed" && order.driverId === driverId).length;
+      const revenue = allOrders
+        .filter(order => order.status === "completed" && order.driverId === driverId)
+        .reduce((sum, order) => sum + Number(order.price || 0), 0);
+
+      pendingCount.textContent = pending;
+      acceptedCount.textContent = accepted;
+      completedCount.textContent = completed;
+      totalRevenue.textContent = formatMoney(revenue);
+    }
+
+    function renderOrders() {
+      const keyword = searchInput.value.trim().toLowerCase();
+      const filter = statusFilter.value;
+      const { driverId } = getDriverInfo();
+
+      let filtered = [...allOrders];
+
+      if (keyword) {
+        filtered = filtered.filter(order => {
+          const text = `
+            ${order.customerName || ""}
+            ${order.phone || ""}
+            ${order.pickup || ""}
+            ${order.destination || ""}
+            ${order.driverName || ""}
+          `.toLowerCase();
+
+          return text.includes(keyword);
+        });
+      }
+
+      if (filter !== "all") {
+        if (filter === "mine") {
+          filtered = filtered.filter(order => order.driverId === driverId);
+        } else {
+          filtered = filtered.filter(order => order.status === filter);
+        }
+      }
+
+      if (!filtered.length) {
+        ordersList.innerHTML = `
+          <div class="empty" style="grid-column:1/-1;">
+            Không có đơn nào phù hợp.
+          </div>
+        `;
+        return;
+      }
+
+      ordersList.innerHTML = filtered.map(order => createOrderCard(order, driverId)).join("");
+
+      bindButtons();
+    }
+
+    function createOrderCard(order, currentDriverId) {
+      const isMine = order.driverId && order.driverId === currentDriverId;
+      const canAccept = order.status === "pending";
+      const canComplete = order.status === "accepted" && isMine;
+      const canCancel = order.status === "accepted" && isMine;
+
+      return `
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">${escapeHtml(order.customerName || "Khách hàng")}</div>
+            <div class="badge ${order.status || "pending"}">${getStatusText(order.status)}</div>
+          </div>
+          <div class="card-body">
+            <div class="price">${formatMoney(order.price || 0)}</div>
+
+            <div class="info-row">
+              <div class="label">Số điện thoại</div>
+              <div class="value">${escapeHtml(order.phone || "")}</div>
+            </div>
+
+            <div class="info-row">
+              <div class="label">Điểm đón</div>
+              <div class="value">${escapeHtml(order.pickup || "")}</div>
+            </div>
+
+            <div class="info-row">
+              <div class="label">Điểm đến</div>
+              <div class="value">${escapeHtml(order.destination || "")}</div>
+            </div>
+
+            <div class="info-row">
+              <div class="label">Khoảng cách</div>
+              <div class="value">${order.distanceKm ? escapeHtml(String(order.distanceKm)) + " km" : "Chưa có"}</div>
+            </div>
+
+            <div class="info-row">
+              <div class="label">Ghi chú</div>
+              <div class="value">${escapeHtml(order.note || "Không có")}</div>
+            </div>
+
+            <div class="info-row">
+              <div class="label">Tài xế nhận</div>
+              <div class="value">${escapeHtml(order.driverName || "Chưa có tài xế")}</div>
+            </div>
+
+            <div class="info-row">
+              <div class="label">Mã đơn</div>
+              <div class="value">${escapeHtml(order.id)}</div>
+            </div>
+
+            <div class="actions">
+              <button class="btn btn-accept" data-action="accept" data-id="${order.id}" ${canAccept ? "" : "disabled"}>
+                Nhận đơn
+              </button>
+              <button class="btn btn-complete" data-action="complete" data-id="${order.id}" ${canComplete ? "" : "disabled"}>
+                Hoàn thành
+              </button>
+              <button class="btn btn-cancel" data-action="cancel" data-id="${order.id}" ${canCancel ? "" : "disabled"}>
+                Hủy đơn
+              </button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function bindButtons() {
+      document.querySelectorAll("[data-action='accept']").forEach(btn => {
+        btn.addEventListener("click", async () => {
+          const orderId = btn.dataset.id;
+          await acceptOrder(orderId, btn);
+        });
+      });
+
+      document.querySelectorAll("[data-action='complete']").forEach(btn => {
+        btn.addEventListener("click", async () => {
+          const orderId = btn.dataset.id;
+          await completeOrder(orderId, btn);
+        });
+      });
+
+      document.querySelectorAll("[data-action='cancel']").forEach(btn => {
+        btn.addEventListener("click", async () => {
+          const orderId = btn.dataset.id;
+          await cancelOrder(orderId, btn);
+        });
+      });
+    }
+
+    async function acceptOrder(orderId, btn) {
+      const { driverId, driverName } = getDriverInfo();
+
+      if (!driverId || !driverName) {
+        alert("Hãy nhập mã tài xế và tên tài xế trước khi nhận đơn");
+        return;
+      }
+
+      try {
+        btn.disabled = true;
+        btn.textContent = "Đang nhận...";
+
+        const orderRef = ref(db, "orders/" + orderId);
+
+        const result = await runTransaction(orderRef, (currentData) => {
+          if (currentData === null) return currentData;
+
+          if (currentData.status === "pending") {
+            return {
+              ...currentData,
+              status: "accepted",
+              driverId,
+              driverName,
+              acceptedAt: Date.now()
+            };
+          }
+
+          return;
+        });
+
+        if (result.committed) {
+          alert("Nhận đơn thành công");
+        } else {
+          alert("Đơn này đã bị tài xế khác nhận rồi");
+        }
+      } catch (error) {
+        console.error(error);
+        alert("Lỗi nhận đơn: " + error.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Nhận đơn";
+      }
+    }
+
+    async function completeOrder(orderId, btn) {
+      const { driverId } = getDriverInfo();
+
+      if (!driverId) {
+        alert("Thiếu mã tài xế");
+        return;
+      }
+
+      const order = allOrders.find(item => item.id === orderId);
+      if (!order) {
+        alert("Không tìm thấy đơn");
+        return;
+      }
+
+      if (order.driverId !== driverId) {
+        alert("Bạn không thể hoàn thành đơn của tài xế khác");
+        return;
+      }
+
+      try {
+        btn.disabled = true;
+        btn.textContent = "Đang xử lý...";
+
+        await update(ref(db, "orders/" + orderId), {
+          status: "completed",
+          completedAt: Date.now()
+        });
+
+        alert("Đã chuyển đơn sang hoàn thành");
+      } catch (error) {
+        console.error(error);
+        alert("Lỗi hoàn thành đơn: " + error.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Hoàn thành";
+      }
+    }
+
+    async function cancelOrder(orderId, btn) {
+      const { driverId } = getDriverInfo();
+
+      if (!driverId) {
+        alert("Thiếu mã tài xế");
+        return;
+      }
+
+      const order = allOrders.find(item => item.id === orderId);
+      if (!order) {
+        alert("Không tìm thấy đơn");
+        return;
+      }
+
+      if (order.driverId !== driverId) {
+        alert("Bạn không thể hủy đơn của tài xế khác");
+        return;
+      }
+
+      const confirmed = confirm("Bạn có chắc muốn hủy đơn này không?");
+      if (!confirmed) return;
+
+      try {
+        btn.disabled = true;
+        btn.textContent = "Đang hủy...";
+
+        await update(ref(db, "orders/" + orderId), {
+          status: "cancelled",
+          cancelledAt: Date.now()
+        });
+
+        alert("Đã hủy đơn");
+      } catch (error) {
+        console.error(error);
+        alert("Lỗi hủy đơn: " + error.message);
+      } finally {
+        btn.disabled = false;
+        btn.textContent = "Hủy đơn";
+      }
+    }
+
+    function getStatusText(status) {
+      switch (status) {
+        case "pending":
+          return "Chờ nhận";
+        case "accepted":
+          return "Đã nhận";
+        case "completed":
+          return "Hoàn thành";
+        case "cancelled":
+          return "Đã hủy";
+        default:
+          return "Không rõ";
+      }
+    }
+
+    function formatMoney(value) {
+      return Number(value || 0).toLocaleString("vi-VN") + "đ";
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+    }
+  </script>
+</body>
+</html>
